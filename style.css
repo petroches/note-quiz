@@ -1,42 +1,118 @@
+/* Основные стили для тела документа */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #1A1B27;
+    color: #0B1329;
+}
+
+.container {
+    background-color: #fff;
+    padding: 0 48px;
+    border-radius: 24px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 360px;
+    height: 332px; /* Фиксированная высота */
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
+    justify-content: space-between;
+    box-sizing: border-box;
 }
 
 h1 {
-    margin-bottom: 20px;
+    font-size: 32px;
+    line-height: 40px;
+    color: #0B1329;
+    margin-top: 48px;
+    margin-bottom: 0;
+}
+
+p {
+    font-size: 16px;
+    line-height: 24px;
+    color: #666;
+    margin: 20px 0;
+    flex-grow: 1; /* Позволяет описанию растягиваться */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 button {
-    padding: 15px 30px;
+    padding: 12px 0;
     font-size: 16px;
-    cursor: pointer;
-    border: none;
-    border-radius: 5px;
-    background-color: #4CAF50;
+    line-height: 24px;
     color: white;
-    transition: background-color 0.3s;
-    margin: 5px;
+    background-color: #536AD4;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 48px;
+    box-sizing: border-box;
+}
+
+button#replay-note {
+    background-color: #536AD4;
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #3B5BDB;
 }
 
-#options-container button {
-    background-color: #008CBA;
+button#replay-note:hover {
+    background-color: #3B5BDB;
 }
 
-#options-container button:hover {
-    background-color: #007BAA;
+#answers {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    flex-grow: 1; /* Позволяет контейнеру ответов заполнять оставшееся пространство */
+    margin: 10px 0;
+    align-items: center;
 }
 
-#result-container {
-    margin-top: 20px;
-    font-size: 18px;
+#answers button {
+    margin: 6px;
+    background-color: transparent;
+    border: 1px solid #D8DFE5;
+    color: #0B1329;
+    width: calc(50% - 12px); /* Adjust width to fit two buttons per row */
+    box-sizing: border-box;
+    font-size: 16px;
+    line-height: 24px;
+    border-radius: 10px;
+}
+
+#answers button:hover {
+    background-color: #DEE2E6;
+}
+
+#result {
+    font-size: 16px;
+    margin-bottom: 48px;
+    padding: 12px 0;
+    border-radius: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    display: none; /* Скрываем результат по умолчанию */
+}
+
+.correct {
+    color: #0A825D;
+    background-color: #EFFFEC;
+    border: 1px solid #CBF4C9;
+}
+
+.incorrect {
+    color: #CD3C64;
+    background-color: #FFF8F4;
+    border: 1px solid #FEE2DD;
 }
