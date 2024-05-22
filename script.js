@@ -2,26 +2,94 @@ document.addEventListener('DOMContentLoaded', () => {
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
     const noteFrequencies = {
-        'C': 523.25,  // Частота до (C5)
-        'D': 587.33,  // Частота ре (D5)
-        'E': 659.25,  // Частота ми (E5)
-        'F': 698.46,  // Частота фа (F5)
-        'G': 783.99,  // Частота соль (G5)
-        'A': 880.00,  // Частота ля (A5)
-        'B': 987.77   // Частота си (B5)
+        'A': 440.00,
+        'B': 493.88,
+        'C': 523.25,
+        'D': 587.33,
+        'E': 659.25,
+        'F': 698.46,
+        'G': 783.99
     };
 
     const notes = Object.keys(noteFrequencies);
-
     let currentNote = '';
 
     const playNote = (frequency) => {
         const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
         oscillator.type = 'sine';
         oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-        oscillator.connect(audioContext.destination);
         oscillator.start();
+
+        gainNode.gain.setValueAtTime(1, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 1);
+        
         oscillator.stop(audioContext.currentTime + 1);
+    };
+
+    const showOptions = () => {
+        const answersDiv = document.getElementById('answers');
+        answersDiv.innerHTML = '';
+        answersDiv.style.display = 'flex';
+        document.getElementById('description').style.display = 'none';
+
+        // Добавить правильную ноту в массив опций
+        let options = [currentNote];
+        
+        // Добавить случайные ноты, пока их количество не станет 4
+        while (options.length < 4) {
+            const randomNote = notes[Math.floor(Math.random() * notes.length)];
+            if (!options.includes(randomNote)) {
+                options.push(randomNote);
+            }
+        }
+        
+        // Перемешать опции
+        options.sort(() => Math.random() - 0.5);
+
+        // Создать кнопки для каждой опции
+        options.forEach(note => {
+            const button = document.createElement('button');
+            button.textContent = note;
+            button.addEventListener('click', () => {
+                playNote(noteFrequencies[note]);
+                setTimeout(() => checkAnswer(note), 1000); // Проверить ответ после воспроизведения ноты
+            });
+            answersDiv.appendChild(button);
+        });
+
+        document.getElementById('play-note').style.display = 'none';
+        document.getElementById('replay-note').style.display = 'block';
+    };
+
+    const checkAnswer = (selectedNote) => {
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'block';
+        document.getElementById('replay-note').style.display = 'none';
+
+        if (selectedNote === currentNote) {
+            resultDiv.textContent = `Correct! It's ${currentNote}`;
+            resultDiv.className = 'correct';
+        } else {
+            resultDiv.textContent = `Incorrect! It's ${currentNote}`;
+            resultDiv.className = 'incorrect';
+        }
+
+        setTimeout(() => reset(), 3000);
+    };
+
+    const reset = () => {
+        document.getElementById('play-note').style.display = 'block';
+        document.getElementById('replay-note').style.display = 'none';
+        document.getElementById('answers').style.display = 'none';
+        document.getElementById('result').textContent = '';
+        document.getElementById('result').className = '';
+        document.getElementById('description').style.display = 'block';
+        document.getElementById('result').style.display = 'none';
     };
 
     document.getElementById('play-note').addEventListener('click', () => {
@@ -33,31 +101,4 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('replay-note').addEventListener('click', () => {
         playNote(noteFrequencies[currentNote]);
     });
-
-    const showOptions = () => {
-        const answersDiv = document.getElementById('answers');
-        answersDiv.innerHTML = '';
-        answersDiv.style.display = 'block';
-
-        const shuffledNotes = notes.sort(() => Math.random() - 0.5);
-        shuffledNotes.slice(0, 4).forEach(note => {
-            const button = document.createElement('button');
-            button.textContent = note;
-            button.addEventListener('click', () => {
-                if (note === currentNote) {
-                    document.getElementById('result').textContent = 'Correct!';
-                } else {
-                    document.getElementById('result').textContent = `Wrong! It was ${currentNote}.`;
-                }
-                document.getElementById('play-note').style.display = 'block';
-                document.getElementById('replay-note').style.display = 'none';
-                answersDiv.style.display = 'none';
-            });
-            button.addEventListener('click', () => playNote(noteFrequencies[note]));
-            answersDiv.appendChild(button);
-        });
-
-        document.getElementById('play-note').style.display = 'none';
-        document.getElementById('replay-note').style.display = 'block';
-    };
 });
