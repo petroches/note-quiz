@@ -5,12 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Musical Hearing</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <button id="play-note">Play Note</button>
-    <button id="replay-note" style="display: none;">Replay</button>
-    <div id="answers" style="display: none;"></div>
-    <div id="result"></div>
+    <div class="container">
+        <h1>Note Quiz</h1>
+        <p id="description">Hello! This is a simulator for the development of musical ear. You need to guess the note. Click the button to start!</p>
+        <div id="answers" style="display: none;"></div>
+        <button id="play-note">Play note</button>
+        <button id="replay-note" style="display: none;">Repeat note</button>
+        <div id="result"></div>
+    </div>
 
     <script src="script.js"></script>
 </body>
