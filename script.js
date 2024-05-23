@@ -1,119 +1,86 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+document.addEventListener('DOMContentLoaded', () => {
+    const noteFrequencies = {
+        'A': 'audio/A_sample.mp3',
+        'B': 'audio/B_sample.mp3',
+        'C': 'audio/C_sample.mp3',
+        'D': 'audio/D_sample.mp3',
+        'E': 'audio/E_sample.mp3',
+        'F': 'audio/F_sample.mp3',
+        'G': 'audio/G_sample.mp3'
+    };
 
-body {
-    font-family: 'Inter', sans-serif;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #1A1B27;
-    color: #0B1329;
-}
+    const notes = Object.keys(noteFrequencies);
+    let currentNote = '';
 
-.container {
-    background-color: #fff;
-    padding: 0 3rem;
-    border-radius: 1.5rem;
-    text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 22.5rem;
-    height: 20.75rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    box-sizing: border-box;
-}
+    const playNote = (note) => {
+        const audio = new Audio(noteFrequencies[note]);
+        audio.play();
+    };
 
-h1 {
-    font-size: 2rem;
-    line-height: 2.5rem;
-    color: #0B1329;
-    margin-top: 3rem;
-    margin-bottom: 0;
-}
+    const showOptions = () => {
+        const answersDiv = document.getElementById('answers');
+        answersDiv.innerHTML = '';
+        answersDiv.style.display = 'flex';
+        document.getElementById('description').style.display = 'none';
 
-p {
-    font-size: 1rem;
-    line-height: 1.5rem;
-    color: #666;
-    margin: 1.25rem 0;
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+        let options = [currentNote];
 
-button {
-    padding: 0.75rem 0;
-    font-size: 1rem;
-    line-height: 1.5rem;
-    color: white;
-    background-color: #536AD4;
-    border: none;
-    border-radius: 0.625rem;
-    cursor: pointer;
-    width: 100%;
-    margin-bottom: 3rem;
-    box-sizing: border-box;
-}
+        while (options.length < 4) {
+            const randomNote = notes[Math.floor(Math.random() * notes.length)];
+            if (!options.includes(randomNote)) {
+                options.push(randomNote);
+            }
+        }
 
-button#replay-note {
-    background-color: #536AD4;
-}
+        options.sort(() => Math.random() - 0.5);
 
-button:hover {
-    background-color: #3B5BDB;
-}
+        options.forEach(note => {
+            const button = document.createElement('button');
+            button.textContent = note;
+            button.addEventListener('click', () => {
+                playNote(note);
+                setTimeout(() => checkAnswer(note), 1000);
+            });
+            answersDiv.appendChild(button);
+        });
 
-button#replay-note:hover {
-    background-color: #3B5BDB;
-}
+        document.getElementById('play-note').style.display = 'none';
+        document.getElementById('replay-note').style.display = 'block';
+    };
 
-#answers {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    flex-grow: 1;
-    margin: 0.625rem 0;
-    align-items: center;
-}
+    const checkAnswer = (selectedNote) => {
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'block';
+        document.getElementById('replay-note').style.display = 'none';
 
-#answers button {
-    margin: 0.375rem;
-    background-color: transparent;
-    border: 1px solid #D8DFE5;
-    color: #0B1329;
-    width: calc(50% - 0.75rem);
-    box-sizing: border-box;
-    font-size: 1rem;
-    line-height: 1.5rem;
-    border-radius: 0.625rem;
-}
+        if (selectedNote === currentNote) {
+            resultDiv.textContent = `Correct! It's ${currentNote}`;
+            resultDiv.className = 'correct';
+        } else {
+            resultDiv.textContent = `Incorrect! It's ${currentNote}`;
+            resultDiv.className = 'incorrect';
+        }
 
-#answers button:hover {
-    background-color: #DEE2E6;
-}
+        setTimeout(() => reset(), 3000);
+    };
 
-#result {
-    font-size: 1rem;
-    margin-bottom: 3rem;
-    padding: 0.75rem 0;
-    border-radius: 0.625rem;
-    width: 100%;
-    box-sizing: border-box;
-    display: none;
-}
+    const reset = () => {
+        document.getElementById('play-note').style.display = 'block';
+        document.getElementById('replay-note').style.display = 'none';
+        document.getElementById('answers').style.display = 'none';
+        document.getElementById('result').textContent = '';
+        document.getElementById('result').className = '';
+        document.getElementById('description').style.display = 'block';
+        document.getElementById('result').style.display = 'none';
+    };
 
-.correct {
-    color: #0A825D;
-    background-color: #EFFFEC;
-    border: 1px solid #CBF4C9;
-}
+    document.getElementById('play-note').addEventListener('click', () => {
+        currentNote = notes[Math.floor(Math.random() * notes.length)];
+        playNote(currentNote);
+        showOptions();
+    });
 
-.incorrect {
-    color: #CD3C64;
-    background-color: #FFF8F4;
-    border: 1px solid #FEE2DD;
-}
+    document.getElementById('replay-note').addEventListener('click', () => {
+        playNote(currentNote);
+    });
+});
