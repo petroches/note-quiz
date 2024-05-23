@@ -1,104 +1,119 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
-    const noteFrequencies = {
-        'A': 440.00,
-        'B': 493.88,
-        'C': 523.25,
-        'D': 587.33,
-        'E': 659.25,
-        'F': 698.46,
-        'G': 783.99
-    };
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #1A1B27;
+    color: #0B1329;
+}
 
-    const notes = Object.keys(noteFrequencies);
-    let currentNote = '';
+.container {
+    background-color: #fff;
+    padding: 0 3rem;
+    border-radius: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 22.5rem;
+    height: 20.75rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
 
-    const playNote = (frequency) => {
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
+h1 {
+    font-size: 2rem;
+    line-height: 2.5rem;
+    color: #0B1329;
+    margin-top: 3rem;
+    margin-bottom: 0;
+}
 
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
+p {
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: #666;
+    margin: 1.25rem 0;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-        oscillator.start();
+button {
+    padding: 0.75rem 0;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: white;
+    background-color: #536AD4;
+    border: none;
+    border-radius: 0.625rem;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 3rem;
+    box-sizing: border-box;
+}
 
-        gainNode.gain.setValueAtTime(1, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 1);
-        
-        oscillator.stop(audioContext.currentTime + 1);
-    };
+button#replay-note {
+    background-color: #536AD4;
+}
 
-    const showOptions = () => {
-        const answersDiv = document.getElementById('answers');
-        answersDiv.innerHTML = '';
-        answersDiv.style.display = 'flex';
-        document.getElementById('description').style.display = 'none';
+button:hover {
+    background-color: #3B5BDB;
+}
 
-        // Добавить правильную ноту в массив опций
-        let options = [currentNote];
-        
-        // Добавить случайные ноты, пока их количество не станет 4
-        while (options.length < 4) {
-            const randomNote = notes[Math.floor(Math.random() * notes.length)];
-            if (!options.includes(randomNote)) {
-                options.push(randomNote);
-            }
-        }
-        
-        // Перемешать опции
-        options.sort(() => Math.random() - 0.5);
+button#replay-note:hover {
+    background-color: #3B5BDB;
+}
 
-        // Создать кнопки для каждой опции
-        options.forEach(note => {
-            const button = document.createElement('button');
-            button.textContent = note;
-            button.addEventListener('click', () => {
-                playNote(noteFrequencies[note]);
-                setTimeout(() => checkAnswer(note), 1000); // Проверить ответ после воспроизведения ноты
-            });
-            answersDiv.appendChild(button);
-        });
+#answers {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    flex-grow: 1;
+    margin: 0.625rem 0;
+    align-items: center;
+}
 
-        document.getElementById('play-note').style.display = 'none';
-        document.getElementById('replay-note').style.display = 'block';
-    };
+#answers button {
+    margin: 0.375rem;
+    background-color: transparent;
+    border: 1px solid #D8DFE5;
+    color: #0B1329;
+    width: calc(50% - 0.75rem);
+    box-sizing: border-box;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    border-radius: 0.625rem;
+}
 
-    const checkAnswer = (selectedNote) => {
-        const resultDiv = document.getElementById('result');
-        resultDiv.style.display = 'block';
-        document.getElementById('replay-note').style.display = 'none';
+#answers button:hover {
+    background-color: #DEE2E6;
+}
 
-        if (selectedNote === currentNote) {
-            resultDiv.textContent = `Correct! It's ${currentNote}`;
-            resultDiv.className = 'correct';
-        } else {
-            resultDiv.textContent = `Incorrect! It's ${currentNote}`;
-            resultDiv.className = 'incorrect';
-        }
+#result {
+    font-size: 1rem;
+    margin-bottom: 3rem;
+    padding: 0.75rem 0;
+    border-radius: 0.625rem;
+    width: 100%;
+    box-sizing: border-box;
+    display: none;
+}
 
-        setTimeout(() => reset(), 3000);
-    };
+.correct {
+    color: #0A825D;
+    background-color: #EFFFEC;
+    border: 1px solid #CBF4C9;
+}
 
-    const reset = () => {
-        document.getElementById('play-note').style.display = 'block';
-        document.getElementById('replay-note').style.display = 'none';
-        document.getElementById('answers').style.display = 'none';
-        document.getElementById('result').textContent = '';
-        document.getElementById('result').className = '';
-        document.getElementById('description').style.display = 'block';
-        document.getElementById('result').style.display = 'none';
-    };
-
-    document.getElementById('play-note').addEventListener('click', () => {
-        currentNote = notes[Math.floor(Math.random() * notes.length)];
-        playNote(noteFrequencies[currentNote]);
-        showOptions();
-    });
-
-    document.getElementById('replay-note').addEventListener('click', () => {
-        playNote(noteFrequencies[currentNote]);
-    });
-});
+.incorrect {
+    color: #CD3C64;
+    background-color: #FFF8F4;
+    border: 1px solid #FEE2DD;
+}
